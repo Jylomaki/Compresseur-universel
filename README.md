@@ -14,5 +14,5 @@ Compression frequentielle
 Compression pattern (ex: jpg)  
   
 On va faire:   
-  Espace col -> Reechantillonage ->  2 Palette(Y, CrCb) -> Dico (?2 dico: chro/lum) -> Huffman  
+  Espace col(done in tp) -> Reechantillonage(done in tp2, need better algorithme though, PSNR is ~30) ->  2 Palette(Y, CrCb) -> Dico (?2 dico: chro/lum) -> Huffman  
     A ajouter: palette, dico, (1 dim taille img?), suite de pix  
