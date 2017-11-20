@@ -118,15 +118,15 @@ public:
 	ImageBase TP2_reechantillonage(int canal1, int canal2, int to_dump);
 	ImageBase TP2_reechantillonage_YUV(int to_dump);
 	bool validCoordinate(int x, int y, int h, int w);
-	void RGB_to_YCrCb(int *RBG, int* YCrCb);
-	void YCrCb_to_RBG(int *YCrCb, int* RGB);
+	void RGB_to_YCbCr(int *RBG, int *YCbCbr);
+	void YCbCr_to_RBG(int *YCbCbr, int *RGB);
 	ImageBase to_YCrCb();
 	void check_In_range(int* RGB);
 	int to_range(int C);
 
 	void transform_vaguellette(int n,int Hbegin, int Vbegin, int size);
 	void transform_vaguellette(int Hbegin, int Vbegin, int size);
-	float PSNR(ImageBase target);
+	double PSNR(ImageBase target);
 
 
 };
