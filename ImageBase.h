@@ -71,7 +71,7 @@ public:
 	void histPPM();
 
 	int* histo();
-	int* compareTab(int* tab1, int* tab2);
+	int* compareTab(const int* tab1, const int* tab2);
 
 	ImageBase getImg();
 
@@ -129,5 +129,6 @@ public:
 	void transform_vaguellette(int Hbegin, int Vbegin, int size);
 	double PSNR(ImageBase target);
 
+    unsigned char* ImageBase::dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau);
 
 };

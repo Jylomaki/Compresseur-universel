@@ -18,6 +18,7 @@
 #include <cstring>
 #include <math.h>
 #include <vector>
+#include <string>
 
 
 ImageBase::ImageBase(void)
@@ -307,33 +308,33 @@ ImageBase ImageBase::thresholdPPMhist(){
 		for(int y = 0; y < this->getWidth(); ++y)
 		{
 			if ((*this)[y*3][x*3+0] < minR){
-				imOut[y*3][x*3+0] = minR;
+				imOut[y*3][x*3+0] = static_cast<unsigned char>(minR);
 			}else{
 				imOut[y*3][x*3+0] = (*this)[y*3][x*3+0];
 			}
 			if((*this)[y*3][x*3+0] > maxR){
-				imOut[y*3][x*3+0] = maxR;
+				imOut[y*3][x*3+0] = static_cast<unsigned char>(maxR);
 			}else{
 				imOut[y*3][x*3+0] = (*this)[y*3][x*3+0];
 			}
 
 			if((*this)[y*3][x*3+1] < minGB)
-				imOut[y*3][x*3+1] = minGB;
+				imOut[y*3][x*3+1] = static_cast<unsigned char>(minGB);
 			else
 				imOut[y*3][x*3+1] =(*this)[y*3][x*3+1];
 
 			if((*this)[y*3][x*3+1] > maxGB)
-				imOut[y*3][x*3+1] = maxGB;
+				imOut[y*3][x*3+1] = static_cast<unsigned char>(maxGB);
 			else
 				imOut[y*3][x*3+1] =(*this)[y*3][x*3+1];
 
 			if((*this)[y*3][x*3+2] < minGB)
-				imOut[y*3][x*3+2] = minGB;
+				imOut[y*3][x*3+2] = static_cast<unsigned char>(minGB);
 			else
 				imOut[y*3][x*3+2] = (*this)[y*3][x*3+2];
 
 			if((*this)[y*3][x*3+2] > maxGB)
-				imOut[y*3][x*3+2] = maxGB;
+				imOut[y*3][x*3+2] = static_cast<unsigned char>(maxGB);
 			else
 				imOut[y*3][x*3+2] = (*this)[y*3][x*3+2];
 		}
@@ -434,7 +435,7 @@ ImageBase ImageBase::expansionDynamique(){
 	for(int x = 0; x < this->getHeight(); ++x)
 		for(int y = 0; y < this->getWidth(); ++y)
 		{
-			imOut[x][y] = (255/Vmax-Vmin)*(-(Vmin)+(*this)[x][y]);
+			imOut[x][y] = static_cast<unsigned char>((255/Vmax-Vmin)*(-(Vmin)+(*this)[x][y]));
 			printf("%d, %d\n ",(*this)[x][y], imOut[x][y]);
 		}
 
@@ -620,11 +621,11 @@ int* ImageBase::histo(){
 	return histR;
 }
 
-int* ImageBase::compareTab(int* tab1, int* tab2){
+int* ImageBase::compareTab(const int* tab1, const int* tab2){
 
 	int nbDiff=0;
 	int length = 255;
-	int* tabDiff = new int[length];
+    auto * tabDiff = new int[length];
 
 	for(int i=0; i<255; i++){
 		tabDiff[i]=0;
@@ -686,7 +687,7 @@ ImageBase ImageBase::erosionPPM(){
 				if((*this)[(y+1)*3][x*3+0] > max){
 					max = (*this)[(y+1)*3][x*3+0];
 				}
-				imOut[y*3][(x-1)*3+0] = imOut[y*3][(x+1)*3+0] = imOut[(y-1)*3][x*3+0] = imOut[(y+1)*3][x*3+0]= max;
+				imOut[y*3][(x-1)*3+0] = imOut[y*3][(x+1)*3+0] = imOut[(y-1)*3][x*3+0] = imOut[(y+1)*3][x*3+0]= static_cast<unsigned char>(max);
 
 				max = 0;
 				if((*this)[y*3][x*3+1] > max){
@@ -704,7 +705,7 @@ ImageBase ImageBase::erosionPPM(){
 				if((*this)[(y+1)*3][x*3+1] > max){
 					max = (*this)[(y+1)*3][x*3+1];
 				}
-				imOut[y*3][(x-1)*3+1] = imOut[y*3][(x+1)*3+1] = imOut[(y-1)*3][x*3+1] = imOut[(y+1)*3][x*3+1]= max;
+				imOut[y*3][(x-1)*3+1] = imOut[y*3][(x+1)*3+1] = imOut[(y-1)*3][x*3+1] = imOut[(y+1)*3][x*3+1]= static_cast<unsigned char>(max);
 
 				max = 0;
 				if((*this)[y*3][x*3+2] > max){
@@ -722,7 +723,7 @@ ImageBase ImageBase::erosionPPM(){
 				if((*this)[(y+1)*3][x*3+2] > max){
 					max = (*this)[(y+1)*3][x*3+2];
 				}
-				imOut[y*3][(x-1)*3+2] = imOut[y*3][(x+1)*3+2] = imOut[(y-1)*3][x*3+2] = imOut[(y+1)*3][x*3+2]= max;
+				imOut[y*3][(x-1)*3+2] = imOut[y*3][(x+1)*3+2] = imOut[(y-1)*3][x*3+2] = imOut[(y+1)*3][x*3+2]= static_cast<unsigned char>(max);
 
 			}
 		}
@@ -756,7 +757,7 @@ ImageBase ImageBase::erosionPGM(){
 				if((*this)[x][y+1] > max){
 					max = (*this)[x][y+1];
 				}
-				imOut[x-1][y] = imOut[x+1][y] = imOut[x][y-1] = imOut[x][y+1] = max;
+				imOut[x-1][y] = imOut[x+1][y] = imOut[x][y-1] = imOut[x][y+1] = static_cast<unsigned char>(max);
 			}
 		}
 
@@ -810,7 +811,7 @@ ImageBase ImageBase::dilatationPPM(){
 				if((*this)[(y+1)*3][x*3+0] < min){
 					min = (*this)[(y+1)*3][x*3+0];
 				}
-				imOut[y*3][(x-1)*3+0] = imOut[y*3][(x+1)*3+0] = imOut[(y-1)*3][x*3+0] = imOut[(y+1)*3][x*3+0]= min;
+				imOut[y*3][(x-1)*3+0] = imOut[y*3][(x+1)*3+0] = imOut[(y-1)*3][x*3+0] = imOut[(y+1)*3][x*3+0]= static_cast<unsigned char>(min);
 
 				min = 255;
 				if((*this)[y*3][x*3+1] < min){
@@ -828,7 +829,7 @@ ImageBase ImageBase::dilatationPPM(){
 				if((*this)[(y+1)*3][x*3+1] < min){
 					min = (*this)[(y+1)*3][x*3+1];
 				}
-				imOut[y*3][(x-1)*3+1] = imOut[y*3][(x+1)*3+1] = imOut[(y-1)*3][x*3+1] = imOut[(y+1)*3][x*3+1]= min;
+				imOut[y*3][(x-1)*3+1] = imOut[y*3][(x+1)*3+1] = imOut[(y-1)*3][x*3+1] = imOut[(y+1)*3][x*3+1]= static_cast<unsigned char>(min);
 
 				min = 255;
 				if((*this)[y*3][x*3+2] < min){
@@ -846,7 +847,7 @@ ImageBase ImageBase::dilatationPPM(){
 				if((*this)[(y+1)*3][x*3+2] < min){
 					min = (*this)[(y+1)*3][x*3+2];
 				}
-				imOut[y*3][(x-1)*3+2] = imOut[y*3][(x+1)*3+2] = imOut[(y-1)*3][x*3+2] = imOut[(y+1)*3][x*3+2]= min;
+				imOut[y*3][(x-1)*3+2] = imOut[y*3][(x+1)*3+2] = imOut[(y-1)*3][x*3+2] = imOut[(y+1)*3][x*3+2] = static_cast<unsigned char>(min);
 			}
 		}
 
@@ -878,7 +879,7 @@ ImageBase ImageBase::dilatationPGM(){
 				if((*this)[x][y+1] < min){
 					min = (*this)[x][y+1];
 				}
-				imOut[x-1][y] = imOut[x+1][y] = imOut[x][y-1] = imOut[x][y+1] = min;
+				imOut[x-1][y] = imOut[x+1][y] = imOut[x][y-1] = imOut[x][y+1] = static_cast<unsigned char>(min);
 			}
 		}
 
@@ -951,7 +952,7 @@ ImageBase ImageBase::greyLevel(){
 	for(int x = 0; x < this->getHeight(); ++x)
 		for(int y = 0; y < this->getWidth(); ++y)
 		{
-			imOut[y][x] = (*this)[y*3][x*3+0]*0.2126 + (*this)[y*3][x*3+1]*0.7152 + (*this)[y*3][x*3+2]*0.0722;
+			imOut[y][x] = static_cast<unsigned char>((*this)[y*3][x*3+0]*0.2126 + (*this)[y*3][x*3+1]*0.7152 + (*this)[y*3][x*3+2]*0.0722);
 		}
 
 	printf("%d, %d \n",imOut.getWidth(), imOut.getHeight());
@@ -972,9 +973,9 @@ ImageBase ImageBase::flouCouleur(){
 				int B = ((*this)[(y-1)*3][(x-1)*3+2] + (*this)[y*3][(x-1)*3+2] + (*this)[(y+1)*3][(x-1)*3+2] + (*this)[(y-1)*3][x*3+2] + (*this)[y*3][x*3+2] + (*this)[(y+1)*3][x*3+2] + (*this)[(y-1)*3][(x+1)*3+2] + (*this)[y*3][(x+1)*3+2] + (*this)[(y+1)*3][(x+1)*3+2])/9;
 				printf("%d, %d, %d\n",testR, V, B);
 
-				imOut[y*3][x*3+0] = testR;
-				imOut[y*3][x*3+1] = V;
-				imOut[y*3][x*3+2] = B;
+				imOut[y*3][x*3+0] = static_cast<unsigned char>(testR);
+				imOut[y*3][x*3+1] = static_cast<unsigned char>(V);
+				imOut[y*3][x*3+2] = static_cast<unsigned char>(B);
 			}
 
 		}
@@ -998,9 +999,9 @@ ImageBase ImageBase::flouFond(ImageBase fond){
 					int B = ((*this)[(y-1)*3][(x-1)*3+2] + (*this)[y*3][(x-1)*3+2] + (*this)[(y+1)*3][(x-1)*3+2] + (*this)[(y-1)*3][x*3+2] + (*this)[y*3][x*3+2] + (*this)[(y+1)*3][x*3+2] + (*this)[(y-1)*3][(x+1)*3+2] + (*this)[y*3][(x+1)*3+2] + (*this)[(y+1)*3][(x+1)*3+2])/9;
 					//printf("%d, %d, %d\n",testR, V, B);
 
-					imOut[y*3][x*3+0] = testR;
-					imOut[y*3][x*3+1] = V;
-					imOut[y*3][x*3+2] = B;
+					imOut[y*3][x*3+0] = static_cast<unsigned char>(testR);
+					imOut[y*3][x*3+1] = static_cast<unsigned char>(V);
+					imOut[y*3][x*3+2] = static_cast<unsigned char>(B);
 
 				}else{
 					imOut[y*3][x*3+0] = (*this)[y*3][x*3+0];
@@ -1065,19 +1066,19 @@ ImageBase ImageBase::moyenne4Region(){
 		for(int y = 0; y < this->getWidth(); ++y)
 		{
 			if(x<height/2 && y<width/2){
-				imOut[x][y] = moyenne_hautgauche;
+				imOut[x][y] = static_cast<unsigned char>(moyenne_hautgauche);
 				variance_hautgauche += ((*this)[x][y]-moyenne_hautgauche)*((*this)[x][y]-moyenne_hautgauche);
 			}
 			if(x<height/2 && y>=width/2 && y<width){
-				imOut[x][y] = moyenne_hautdroit;
+				imOut[x][y] = static_cast<unsigned char>(moyenne_hautdroit);
 				variance_hautdroit += ((*this)[x][y]-moyenne_hautdroit)*((*this)[x][y]-moyenne_hautdroit);
 			}
 			if(x >=height/2 && y<width/2){
-				imOut[x][y] = moyenne_basgauche;
+				imOut[x][y] = static_cast<unsigned char>(moyenne_basgauche);
 				variance_basgauche += ((*this)[x][y]-moyenne_basgauche)*((*this)[x][y]-moyenne_basgauche);
 			}
 			if(x >=height/2 && y>=width/2 && y<width){
-				imOut[x][y] = moyenne_basdroit;
+				imOut[x][y] = static_cast<unsigned char>(moyenne_basdroit);
 				variance_basdroit += ((*this)[x][y]-moyenne_basdroit)*((*this)[x][y]-moyenne_basdroit);
 			}
 
@@ -1143,26 +1144,26 @@ void ImageBase::recursRegion(ImageBase &imOut, int idepart, int jdepart, int tai
 		variance_basgauche = variance_basgauche/nbpix - moyenne_basgauche*moyenne_basgauche;
 		variance_basdroit = variance_basdroit/nbpix - moyenne_basdroit*moyenne_basdroit;
 
-		int et_hg = (int)sqrt(variance_hautgauche);
-		int et_hd = (int)sqrt(variance_hautdroit);
-		int et_bg = (int)sqrt(variance_basgauche);
-		int et_bd = (int)sqrt(variance_basdroit);
+		auto et_hg = (int)sqrt(variance_hautgauche);
+		auto et_hd = (int)sqrt(variance_hautdroit);
+		auto et_bg = (int)sqrt(variance_basgauche);
+		auto et_bd = (int)sqrt(variance_basdroit);
 
 		for(int x = idepart; x < idepart+taille; ++x)
 			for(int y = jdepart; y <jdepart+taille; ++y)
 			{
 
 				if(x<idepart+cote && y<jdepart+cote){
-					imOut[x][y] = moyenne_hautgauche;
+					imOut[x][y] = static_cast<unsigned char>(moyenne_hautgauche);
 				}
 				if(x<idepart+cote && y>=jdepart+cote){
-					imOut[x][y] = moyenne_hautdroit;
+					imOut[x][y] = static_cast<unsigned char>(moyenne_hautdroit);
 				}
 				if(x>=idepart+cote && y<jdepart+cote){
-					imOut[x][y] = moyenne_basgauche;
+					imOut[x][y] = static_cast<unsigned char>(moyenne_basgauche);
 				}
 				if(x>=idepart+cote && y>=jdepart+cote){
-					imOut[x][y] = moyenne_basdroit;
+					imOut[x][y] = static_cast<unsigned char>(moyenne_basdroit);
 				}
 
 			}
@@ -1280,9 +1281,9 @@ ImageBase ImageBase::deux_mean(){
 					b1 += currentPixel[2];
 					c1_count ++;
 
-					imOut[y*3][x*3+0] = C1[0];
-					imOut[y*3][x*3+1] = C1[1];
-					imOut[y*3][x*3+2] = C1[2];
+					imOut[y*3][x*3+0] = static_cast<unsigned char>(C1[0]);
+					imOut[y*3][x*3+1] = static_cast<unsigned char>(C1[1]);
+					imOut[y*3][x*3+2] = static_cast<unsigned char>(C1[2]);
 				}
 				else{
 					r2 += currentPixel[0];
@@ -1290,9 +1291,9 @@ ImageBase ImageBase::deux_mean(){
 					b2 += currentPixel[2];
 					c2_count ++;
 
-					imOut[y*3][x*3+0] = C2[0];
-					imOut[y*3][x*3+1] = C2[1];
-					imOut[y*3][x*3+2] = C2[2];		
+					imOut[y*3][x*3+0] = static_cast<unsigned char>(C2[0]);
+					imOut[y*3][x*3+1] = static_cast<unsigned char>(C2[1]);
+					imOut[y*3][x*3+2] = static_cast<unsigned char>(C2[2]);
 				}
 
 			}
@@ -1438,7 +1439,7 @@ ImageBase ImageBase::K_mean(int k, bool colored){
 	int palette_triee_id[k];
 
 	for(int i=0; i<k; i++){
-		palette_luminance[i]= 0.3 * palette_R[i] + 0.6* palette_G[i] + 0.1 * palette_B[i];
+		palette_luminance[i]= static_cast<unsigned char>(0.3 * palette_R[i] + 0.6* palette_G[i] + 0.1 * palette_B[i]);
 	}
 	// C'est pas un tri rapide, mais la j'ai la flemme
 	
@@ -1478,14 +1479,14 @@ ImageBase ImageBase::K_mean(int k, bool colored){
 					}
 
 					if(colored){//send color
-						imOut[i*3][j*3+0] = palette_R[minID];
-						imOut[i*3][j*3+1] = palette_G[minID];
-						imOut[i*3][j*3+2] = palette_B[minID];
+						imOut[i*3][j*3+0] = static_cast<unsigned char>(palette_R[minID]);
+						imOut[i*3][j*3+1] = static_cast<unsigned char>(palette_G[minID]);
+						imOut[i*3][j*3+2] = static_cast<unsigned char>(palette_B[minID]);
 					}
 					else{//send ndg
-						imOut[i*3][j*3+0] = palette_triee[minID]* 255/k;
-						imOut[i*3][j*3+1] = palette_triee[minID]* 255/k;
-						imOut[i*3][j*3+2] = palette_triee[minID]* 255/k;
+						imOut[i*3][j*3+0] = static_cast<unsigned char>(palette_triee[minID]* 255/k);
+						imOut[i*3][j*3+1] = static_cast<unsigned char>(palette_triee[minID]* 255/k);
+						imOut[i*3][j*3+2] = static_cast<unsigned char>(palette_triee[minID]* 255/k);
 					}
 					
 
@@ -1497,9 +1498,9 @@ ImageBase ImageBase::K_mean(int k, bool colored){
 	currentID=0;
 	for(int i=0; i<sqrt_k; i++){
 		for(int j=0; j<sqrt_k; j++){
-			paletteOut[i*3][j*3] = palette_R[palette_triee_id[currentID]];
-			paletteOut[i*3][j*3+1] = palette_G[palette_triee_id[currentID]];
-			paletteOut[i*3][j*3+2] = palette_B[palette_triee_id[currentID]];
+			paletteOut[i*3][j*3] = static_cast<unsigned char>(palette_R[palette_triee_id[currentID]]);
+			paletteOut[i*3][j*3+1] = static_cast<unsigned char>(palette_G[palette_triee_id[currentID]]);
+			paletteOut[i*3][j*3+2] = static_cast<unsigned char>(palette_B[palette_triee_id[currentID]]);
 			currentID++;
 		}
 	}
@@ -1618,8 +1619,8 @@ ImageBase ImageBase::TP2_reechantillonage(int canal1, int canal2, int to_dump){
 					mean_count += weigth;
 				}
 				if(mean_count){
-					imOut[i*3][j*3+canal1] = col1_count / mean_count;
-					imOut[i*3][j*3+canal2] = col2_count / mean_count;
+					imOut[i*3][j*3+canal1] = static_cast<unsigned char>(col1_count / mean_count);
+					imOut[i*3][j*3+canal2] = static_cast<unsigned char>(col2_count / mean_count);
 				}
 				else{
 					printf("A point had no valid neighbor\n");
@@ -1666,9 +1667,9 @@ ImageBase ImageBase::TP2_reechantillonage_YUV(int to_dump){
 
 			RGB_to_YCbCr(RGB, YCrCb);
 
-			imTmp[i*3][j*3+0]=YCrCb[0];
-			imTmp[i*3][j*3+1]=YCrCb[1];
-			imTmp[i*3][j*3+2]=YCrCb[2];
+			imTmp[i*3][j*3+0]=static_cast<unsigned char>(YCrCb[0]);
+			imTmp[i*3][j*3+1]=static_cast<unsigned char>(YCrCb[1]);
+			imTmp[i*3][j*3+2]=static_cast<unsigned char>(YCrCb[2]);
 		}
 	}
 
@@ -1751,8 +1752,8 @@ ImageBase ImageBase::TP2_reechantillonage_YUV(int to_dump){
 					mean_count += weigth;
 				}
 				if(mean_count){
-					imOut[i*3][j*3+canal1] = col1_count / mean_count;
-					imOut[i*3][j*3+canal2] = col2_count / mean_count;
+					imOut[i*3][j*3+canal1] = static_cast<unsigned char>(col1_count / mean_count);
+					imOut[i*3][j*3+canal2] = static_cast<unsigned char>(col2_count / mean_count);
 				}
 				else{
 					printf("A point had no valid neighbor\n");
@@ -1769,9 +1770,9 @@ ImageBase ImageBase::TP2_reechantillonage_YUV(int to_dump){
 
 			YCbCr_to_RBG(YCrCb, RGB);
 
-			imOut[i*3][j*3+0]=RGB[0];
-			imOut[i*3][j*3+1]=RGB[1];
-			imOut[i*3][j*3+2]=RGB[2];
+			imOut[i*3][j*3+0]=static_cast<unsigned char>(RGB[0]);
+			imOut[i*3][j*3+1]=static_cast<unsigned char>(RGB[1]);
+			imOut[i*3][j*3+2]=static_cast<unsigned char>(RGB[2]);
 		}
 	}
 
@@ -1798,9 +1799,9 @@ bool ImageBase::validCoordinate(int x, int y, int h, int w){
 }
 
 void ImageBase::RGB_to_YCbCr(int *RGB, int *YCbCbr){
-	int Y = RGB[0]*0.299 + RGB[1]*0.587 + RGB[2]*0.114;
-	int Cb = -0.1687 * RGB[0] - 0.3313*RGB[1] + 0.5*RGB[2]+128;
-	int Cr = 0.5*RGB[0] - 0.4187*RGB[1] - 0.0813*RGB[2]+128;
+	int Y = static_cast<unsigned char>(RGB[0]*0.299 + RGB[1]*0.587 + RGB[2]*0.114);
+	int Cb = static_cast<unsigned char>(-0.1687 * RGB[0] - 0.3313*RGB[1] + 0.5*RGB[2]+128);
+	int Cr = static_cast<unsigned char>(0.5*RGB[0] - 0.4187*RGB[1] - 0.0813*RGB[2]+128);
 
 	YCbCbr[0]=Y;
 	YCbCbr[1]=Cb;
@@ -1808,9 +1809,9 @@ void ImageBase::RGB_to_YCbCr(int *RGB, int *YCbCbr){
 }
 
 void ImageBase::YCbCr_to_RBG(int *YCbCbr, int *RGB){
-	RGB[0] = YCbCbr[0]+ 1.402*(YCbCbr[1]-128);
-	RGB[1] = YCbCbr[0]- 0.34414*(YCbCbr[2]-128) - 0.71414*(YCbCbr[1]-128);
-	RGB[2] = YCbCbr[0]+ 1.772*(YCbCbr[2]-128);
+	RGB[0] = static_cast<unsigned char>(YCbCbr[0]+ 1.402*(YCbCbr[1]-128));
+	RGB[1] = static_cast<unsigned char>(YCbCbr[0]- 0.34414*(YCbCbr[2]-128) - 0.71414*(YCbCbr[1]-128));
+	RGB[2] = static_cast<unsigned char>(YCbCbr[0]+ 1.772*(YCbCbr[2]-128));
 }
 
 void ImageBase::check_In_range(int* RGB){
@@ -1839,9 +1840,9 @@ ImageBase ImageBase::to_YCbCr(){
 			RGB_to_YCbCr(RGB, YCrCb);
 			check_In_range(YCrCb);
 
-			imOut[i*3][j*3+0]=YCrCb[0];
-			imOut[i*3][j*3+1]=YCrCb[1];
-			imOut[i*3][j*3+2]=YCrCb[2];
+			imOut[i*3][j*3+0]= static_cast<unsigned char>(YCrCb[0]);
+			imOut[i*3][j*3+1]= static_cast<unsigned char>(YCrCb[1]);
+			imOut[i*3][j*3+2]= static_cast<unsigned char>(YCrCb[2]);
 		}
 	}
 	return imOut;
@@ -1906,7 +1907,7 @@ void ImageBase::transform_vaguellette(int Hbegin, int Vbegin, int size){
 				//printf("(%d,%d):%d\n",i,j, color/4);
 				int x = Hbegin +i;
 				int y = Vbegin +j;
-				imOut[x*3][y*3+c]= (color/4);
+				imOut[x*3][y*3+c]= static_cast<unsigned char>((color/4));
 			}
 		}
 		//printf("B block\n");
@@ -1924,7 +1925,7 @@ void ImageBase::transform_vaguellette(int Hbegin, int Vbegin, int size){
 				x = Hbegin+size/2+i;
 				y = Vbegin+j;
 				//printf("(%d,%d):%d\n",x,y,to_range(moyHH - moyHB) );				
-				imOut[x*3][y*3+c]= to_range(moyHH - moyHB);
+				imOut[x*3][y*3+c]= static_cast<unsigned char>(to_range(moyHH - moyHB));
 			}
 		}
 		//printf("C block\n");
@@ -1942,7 +1943,7 @@ void ImageBase::transform_vaguellette(int Hbegin, int Vbegin, int size){
 				x = Hbegin+i;
 				y = Vbegin+size/2+j;
 				//printf("(%d,%d):%d\n",x,y, to_range(moyVG - moyVD));
-				imOut[x*3][y*3+c]= to_range(moyVG - moyVD);
+				imOut[x*3][y*3+c]= static_cast<unsigned char> (to_range(moyVG - moyVD));
 			}
 		}
 
@@ -1960,7 +1961,7 @@ void ImageBase::transform_vaguellette(int Hbegin, int Vbegin, int size){
 				x = Hbegin+size/2+i;
 				y = Vbegin+size/2+j;
 				//printf("(%d,%d):%d\n",x,y, to_range(moyHG - moyHD));
-				imOut[x*3][y*3+c]= to_range(moyHG - moyHD);
+				imOut[x*3][y*3+c] = static_cast<unsigned char>(to_range(moyHG - moyHD));
 			}
 		}
 	}
@@ -2015,10 +2016,23 @@ ImageBase ImageBase::to_RGB(){
 			RGB_to_YCbCr(YCrCb, RGB);
 			check_In_range(RGB);
 
-			imOut[i*3][j*3+0]=RGB[0];
-			imOut[i*3][j*3+1]=RGB[1];
-			imOut[i*3][j*3+2]=RGB[2];
+			imOut[i*3][j*3+0]= static_cast<unsigned char>(RGB[0]);
+			imOut[i*3][j*3+1]= static_cast<unsigned char>(RGB[1]);
+			imOut[i*3][j*3+2]= static_cast<unsigned char>(RGB[2]);
 		}
 	}
 	return imOut;
+}
+
+unsigned char* ImageBase::dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau) {
+	unsigned char* valeurs = imIn->getData();
+
+   std::string sortie;
+
+    for (int i = 0 ; i < imIn->getHeight() * imIn->getWidth() ; i++) {
+        for (int j = 0 ; j < taille_tableau ; j++) {
+
+        }
+    }
+
 }
