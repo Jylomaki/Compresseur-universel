@@ -1798,13 +1798,13 @@ bool ImageBase::validCoordinate(int x, int y, int h, int w){
 }
 
 void ImageBase::RGB_to_YCrCb(int *RGB, int* YCrCb){
-	int Y = RGB[0]*0.3 + RGB[1]*0.6 + RGB[2]*0.1;
+	int Y = RGB[0]*0.299 + RGB[1]*0.587 + RGB[2]*0.114;
 	int Cr = -0.1687 * RGB[0] - 0.3313*RGB[1] + 0.5*RGB[2]+128;
 	int Cb = 0.5*RGB[0] - 0.4187*RGB[1] - 0.0813*RGB[2]+128;
 
 	YCrCb[0]=Y;
-	YCrCb[2]=Cr;
 	YCrCb[1]=Cb;
+	YCrCb[2]=Cr;
 }
 
 void ImageBase::YCrCb_to_RBG(int *YCrCb, int* RGB){
@@ -1996,6 +1996,7 @@ double ImageBase::PSNR(ImageBase target){
 	int EQM_color = diffsum/ (height*width);
 	if(EQM_color > 0){
 		double PSNR = 10.0 * log10(pow(3*255.0,2.0)/(float)EQM_color);
+		printf("The PSNR is %lf\n",PSNR);
 		return PSNR;
 	}
 	printf("The images are the same, the PSNR is infinite\n");
