@@ -39,9 +39,10 @@ int main(int argc, char **argv)
     imIn.to_YCbCr().save(const_cast<char *> (s.c_str()));
 
     imIn.PSNR(imIn.to_YCbCr());
-    imIn.to_YCbCr().save("Sortie/YCBCR");
-	imIn.to_YCbCr().K_mean(S,1).save("Sortie/YCBCR_KM");
-	imIn.to_YCbCr().K_mean(S,1).to_RGB().save("Sortie/YCBCR_KM_RGB");
+    //imIn.to_YCbCr().save("Sortie/YCBCR");
+	//imIn.to_YCbCr().K_mean(S,1).save("Sortie/YCBCR_KM");
+	//imIn.to_YCbCr().K_mean(S,1).to_RGB().save("Sortie/YCBCR_KM_RGB");
+	imIn.PSNR(imIn.to_YCbCr().K_mean(S,1).to_RGB());
 	imIn.transform_vaguellette(N,0,0,imIn.getWidth());
 	//imIn.save(cNomImgEcrite);
 
