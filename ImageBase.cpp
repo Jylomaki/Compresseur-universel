@@ -2000,5 +2000,7 @@ double ImageBase::PSNR(ImageBase target){
 		return PSNR;
 	}
 	printf("The images are the same, the PSNR is infinite\n");
-	return 0.0;
+	return 0.0f;
 }
+
+
