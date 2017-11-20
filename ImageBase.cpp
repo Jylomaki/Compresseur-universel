@@ -1664,7 +1664,7 @@ ImageBase ImageBase::TP2_reechantillonage_YUV(int to_dump){
 			RGB[1]=(*this)[i*3][j*3+1];
 			RGB[2]=(*this)[i*3][j*3+2];
 
-			RGB_to_YCrCb(RGB,YCrCb);
+			RGB_to_YCbCr(RGB, YCrCb);
 
 			imTmp[i*3][j*3+0]=YCrCb[0];
 			imTmp[i*3][j*3+1]=YCrCb[1];
@@ -1767,7 +1767,7 @@ ImageBase ImageBase::TP2_reechantillonage_YUV(int to_dump){
 			YCrCb[1]=imOut[i*3][j*3+1];
 			YCrCb[2]=imOut[i*3][j*3+2];
 
-			YCrCb_to_RBG(YCrCb,RGB);
+			YCbCr_to_RBG(YCrCb, RGB);
 
 			imOut[i*3][j*3+0]=RGB[0];
 			imOut[i*3][j*3+1]=RGB[1];
@@ -1797,20 +1797,20 @@ bool ImageBase::validCoordinate(int x, int y, int h, int w){
 	return (0 <= x && x < h) && (0 <= y && y< w) && (x%2==0 && y%2 ==0);
 }
 
-void ImageBase::RGB_to_YCrCb(int *RGB, int* YCrCb){
+void ImageBase::RGB_to_YCbCr(int *RGB, int *YCbCbr){
 	int Y = RGB[0]*0.299 + RGB[1]*0.587 + RGB[2]*0.114;
-	int Cr = -0.1687 * RGB[0] - 0.3313*RGB[1] + 0.5*RGB[2]+128;
-	int Cb = 0.5*RGB[0] - 0.4187*RGB[1] - 0.0813*RGB[2]+128;
+	int Cb = -0.1687 * RGB[0] - 0.3313*RGB[1] + 0.5*RGB[2]+128;
+	int Cr = 0.5*RGB[0] - 0.4187*RGB[1] - 0.0813*RGB[2]+128;
 
-	YCrCb[0]=Y;
-	YCrCb[1]=Cb;
-	YCrCb[2]=Cr;
+	YCbCbr[0]=Y;
+	YCbCbr[1]=Cb;
+	YCbCbr[2]=Cr;
 }
 
-void ImageBase::YCrCb_to_RBG(int *YCrCb, int* RGB){
-	RGB[0] = YCrCb[0]+ 1.402*(YCrCb[1]-128);
-	RGB[1] = YCrCb[0]- 0.34414*(YCrCb[2]-128) - 0.71414*(YCrCb[1]-128);
-	RGB[2] = YCrCb[0]+ 1.772*(YCrCb[2]-128);
+void ImageBase::YCbCr_to_RBG(int *YCbCbr, int *RGB){
+	RGB[0] = YCbCbr[0]+ 1.402*(YCbCbr[1]-128);
+	RGB[1] = YCbCbr[0]- 0.34414*(YCbCbr[2]-128) - 0.71414*(YCbCbr[1]-128);
+	RGB[2] = YCbCbr[0]+ 1.772*(YCbCbr[2]-128);
 }
 
 void ImageBase::check_In_range(int* RGB){
@@ -1836,7 +1836,7 @@ ImageBase ImageBase::to_YCrCb(){
 			RGB[1]=(*this)[i*3][j*3+1];
 			RGB[2]=(*this)[i*3][j*3+2];
 
-			RGB_to_YCrCb(RGB,YCrCb);
+			RGB_to_YCbCr(RGB, YCrCb);
 			check_In_range(YCrCb);
 
 			imOut[i*3][j*3+0]=YCrCb[0];
