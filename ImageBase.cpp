@@ -1977,3 +1977,27 @@ void ImageBase::transform_vaguellette(int Hbegin, int Vbegin, int size){
 	printf("transform_vaguellette done\n");
 	//this->save("debug_im/in_recurP.ppm");
 }
+
+double ImageBase::PSNR(ImageBase target){
+	int width= this->getWidth();
+	int height = this->getHeight();
+	if(target.getWidth() != width || target.getHeight() != height)
+	{
+		printf("Problem: image are not the same size!\n");
+		return 0.0f;
+	}
+	int diffsum =0;
+	for(int c=0; c<3; c++)
+		for(int i=0; i<height; i++)
+			for(int j=0; j<width; j++){
+				diffsum += pow((*this)[i*3][j*3] - target[i*3][j*3+c],2);
+			}
+
+	int EQM_color = diffsum/ (height*width);
+	if(EQM_color > 0){
+		double PSNR = 10.0 * log10(pow(3*255.0,2.0)/(float)EQM_color);
+		return PSNR;
+	}
+	printf("The images are the same, the PSNR is infinite\n");
+	return 0.0;
+}

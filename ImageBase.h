@@ -126,6 +126,7 @@ public:
 
 	void transform_vaguellette(int n,int Hbegin, int Vbegin, int size);
 	void transform_vaguellette(int Hbegin, int Vbegin, int size);
+	double PSNR(ImageBase target);
 
 
 };
