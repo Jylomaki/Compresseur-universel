@@ -119,7 +119,7 @@ public:
 	ImageBase TP2_reechantillonage_YUV(int to_dump);
 	bool validCoordinate(int x, int y, int h, int w);
 	void RGB_to_YCbCr(int *RBG, int *YCbCbr);
-	void YCbCr_to_RBG(int *YCbCbr, int *RGB);
+	void YCbCr_to_RGB(int *YCbCbr, int *RGB);
 	ImageBase to_YCbCr();
 	ImageBase to_RGB();
 	void check_In_range(int* RGB);
@@ -129,7 +129,7 @@ public:
 	void transform_vaguellette(int Hbegin, int Vbegin, int size);
 	double PSNR(ImageBase target);
 
-    unsigned char* ImageBase::dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau);
+    unsigned char* dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau);
     ImageBase pallette_CbCr(int k, bool colored);
 
 };

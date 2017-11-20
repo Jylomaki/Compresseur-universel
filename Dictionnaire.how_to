@@ -1,0 +1,25 @@
+Dictionnaire necessary stuff:
+	Array of String
+	Array of String_meeting_count (int)
+
+	method:
+		Is_in?
+
+Creation du dico:
+	For all px
+		current_string = pix
+		While(current_string in dico)
+			current_string =+ next_pix
+		push current_string into dico
+
+
+
+Compression:
+	while(not the end)
+		current_string = next_pix
+		while (current_string+next_pix in dico)
+			current_string += next_pix
+		push dico_ID of current_string
+
+
+resulting: Dictionaire + Array of dico_ID

@@ -1427,7 +1427,7 @@ ImageBase ImageBase::K_mean(int k, bool colored){
 				}
 			}
 		}
-		//printf("Nb_boucle:,%i\n",nb_boucle++);
+		printf("Nb_boucle:%i\n",nb_boucle++);
 	}
 
 	// trier les couleurs de la palette par luminance:3,6,1
@@ -1504,7 +1504,7 @@ ImageBase ImageBase::K_mean(int k, bool colored){
 			currentID++;
 		}
 	}
-	paletteOut.save((char*)"palette_dump.ppm");
+	paletteOut.save((char*)"./Sortie/palette_dump.ppm");
 
 	//calcul du PSNR
 	int R_diffsum = 0, G_diffsum = 0,B_diffsum = 0;
@@ -1768,7 +1768,7 @@ ImageBase ImageBase::TP2_reechantillonage_YUV(int to_dump){
 			YCrCb[1]=imOut[i*3][j*3+1];
 			YCrCb[2]=imOut[i*3][j*3+2];
 
-			YCbCr_to_RBG(YCrCb, RGB);
+			YCbCr_to_RGB(YCrCb, RGB);
 
 			imOut[i*3][j*3+0]=static_cast<unsigned char>(RGB[0]);
 			imOut[i*3][j*3+1]=static_cast<unsigned char>(RGB[1]);
@@ -1808,10 +1808,10 @@ void ImageBase::RGB_to_YCbCr(int *RGB, int *YCbCbr){
 	YCbCbr[2]=Cr;
 }
 
-void ImageBase::YCbCr_to_RBG(int *YCbCbr, int *RGB){
-	RGB[0] = static_cast<unsigned char>(YCbCbr[0]+ 1.402*(YCbCbr[1]-128));
-	RGB[1] = static_cast<unsigned char>(YCbCbr[0]- 0.34414*(YCbCbr[2]-128) - 0.71414*(YCbCbr[1]-128));
-	RGB[2] = static_cast<unsigned char>(YCbCbr[0]+ 1.772*(YCbCbr[2]-128));
+void ImageBase::YCbCr_to_RGB(int *YCbCbr, int *RGB){
+	RGB[0] = static_cast<unsigned char>(YCbCbr[0]+ 1.402*(YCbCbr[2]-128));
+	RGB[1] = static_cast<unsigned char>(YCbCbr[0]- 0.34414*(YCbCbr[1]-128) - 0.71414*(YCbCbr[2]-128));
+	RGB[2] = static_cast<unsigned char>(YCbCbr[0]+ 1.772*(YCbCbr[1]-128));
 }
 
 void ImageBase::check_In_range(int* RGB){
@@ -2013,7 +2013,7 @@ ImageBase ImageBase::to_RGB(){
 			YCrCb[1]=(*this)[i*3][j*3+1];
 			YCrCb[2]=(*this)[i*3][j*3+2];
 
-			RGB_to_YCbCr(YCrCb, RGB);
+			YCbCr_to_RGB(YCrCb, RGB);
 			check_In_range(RGB);
 
 			imOut[i*3][j*3+0]= static_cast<unsigned char>(RGB[0]);
@@ -2064,7 +2064,7 @@ ImageBase ImageBase::pallette_CbCr(int k, bool colored){
 
 	ImageBase imOut(this->getWidth(), this->getHeight(), this->getColor());
 	ImageBase paletteOut(sqrt_k,sqrt_k,this->getColor());
-	//printf("INIT de la palette\n");
+
 	//On initialise la palette avec une grille de points
 	for(int i =0; i<sqrt_k; i++){
 		for(int j=0; j<sqrt_k; j++){
@@ -2126,7 +2126,7 @@ ImageBase ImageBase::pallette_CbCr(int k, bool colored){
 				}
 			}
 		}
-		printf("Nb_boucle:,%i\n",nb_boucle++);
+		printf("Nb_boucle: %i\n",nb_boucle++);
 	}
 
 	// On met à la couleur correspondante a chaque points:
