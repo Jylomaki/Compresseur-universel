@@ -1827,7 +1827,7 @@ void ImageBase::check_In_range(int* RGB){
 	}
 }
 
-ImageBase ImageBase::to_YCrCb(){
+ImageBase ImageBase::to_YCbCr(){
 	ImageBase imOut(this->getWidth(), this->getHeight(), this->getColor());
 	int YCrCb[3], RGB[3];
 	for(int i=0; i<height; i++){
