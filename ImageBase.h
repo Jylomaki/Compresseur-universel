@@ -130,5 +130,6 @@ public:
 	double PSNR(ImageBase target);
 
     unsigned char* ImageBase::dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau);
+    ImageBase pallette_CbCr(int k, bool colored);
 
 };

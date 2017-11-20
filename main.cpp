@@ -32,12 +32,16 @@ int main(int argc, char **argv)
 	ImageBase imIn, imOut;
 	imIn.load(cNomImgLue);
 
-    nom_fichier_sortie << "Sortie/" << image_lue << "_ycbcr.ppm";
+
+    nom_fichier_sortie << "Sortie/" << image_lue;
     string s = nom_fichier_sortie.str();
 
     imIn.to_YCbCr().save(const_cast<char *> (s.c_str()));
 
     imIn.PSNR(imIn.to_YCbCr());
+    imIn.to_YCbCr().save("Sortie/nom_fichier_sortie");
+	imIn.to_YCbCr().pallette_CbCr(S,1).save("Sortie/nom_fichier_sortie");
+	imIn.PSNR(imIn.to_YCbCr().pallette_CbCr(S,1).to_RGB());
 	imIn.transform_vaguellette(N,0,0,imIn.getWidth());
 	//imIn.save(cNomImgEcrite);
 

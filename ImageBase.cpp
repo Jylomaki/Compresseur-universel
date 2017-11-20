@@ -2036,3 +2036,137 @@ unsigned char* ImageBase::dictionnaire(ImageBase *imIn, unsigned char * biblioth
     }
 
 }
+
+ImageBase ImageBase::pallette_CbCr(int k, bool colored){
+	//debug
+	int nb_boucle=0;
+
+	//palette
+	int palette_G[k];
+	int palette_B[k];
+
+	//accumulateurs
+	int palette_G_sum[k] = {0};
+	int palette_B_sum[k] = {0};
+	int palette_count[k] = {0};
+
+	//usage interne a boucle
+	double minDist, currentDist;
+	int currentPalette[2];
+	int currentPixel[2];
+	int old_color[2];
+	int minID, currentID=0;
+
+	//paramètres
+	int sqrt_k = sqrt(k);
+	int width =  this->getWidth();
+	int height = this->getHeight();
+
+	ImageBase imOut(this->getWidth(), this->getHeight(), this->getColor());
+	ImageBase paletteOut(sqrt_k,sqrt_k,this->getColor());
+	//printf("INIT de la palette\n");
+	//On initialise la palette avec une grille de points
+	for(int i =0; i<sqrt_k; i++){
+		for(int j=0; j<sqrt_k; j++){
+			//printf("INIT de la palette, currentID: %i\n",currentID);
+			palette_G[currentID] = (*this)[i*3* height/sqrt_k][j*3* width/sqrt_k+1];
+			palette_B[currentID] = (*this)[i*3* height/sqrt_k][j*3* width/sqrt_k+2];
+			currentID++;
+		}
+	}
+
+	//printf("Begin iteration vers convergence\n");
+	bool convergence = false;
+	while(!convergence){
+		convergence = true;
+		//raccorder chaque point a son plus proche
+		for(int i=0; i< height; i++){
+			for(int j=0; j< width; j++){
+				minDist = 257;
+				minID = 0;
+				currentPixel [1] = (*this)[i*3][j*3+1];
+				currentPixel [2] = (*this)[i*3][j*3+2];
+
+				//On cherche la couleur de la palette la plus proche du pixel courant
+				for(int k_i=0; k_i < k; k_i++){
+					currentPalette[1]= palette_G[k_i];
+					currentPalette[2]= palette_B[k_i];
+
+					currentDist = dist(currentPalette, currentPixel);
+					if(minDist > currentDist){
+						minDist = currentDist;
+						minID = k_i;
+
+					}
+				}
+				palette_G_sum[minID] += currentPixel[1];
+				palette_B_sum[minID] += currentPixel[2];
+				palette_count[minID] ++;
+			}
+		}
+		//calculer la nouvelle couleur moyenne de chaque ensembles de la palette
+		for(int i=0; i<k; i++){
+			//On ne considère que les palettes qui ont des points
+			if(palette_count[i] != 0){
+				old_color[1]= palette_G[i];
+				old_color[2]= palette_B[i];
+
+				//Moyenne de la couleur des points approximés à la ieme couleur
+				palette_G[i]= palette_G_sum[i]/palette_count[i];
+				palette_B[i]= palette_B_sum[i]/palette_count[i];
+
+				//reset de l'ensemble de point approximé à la ieme couleur
+				palette_G_sum[i]=0;
+				palette_B_sum[i]=0;
+				palette_count[i]=0;
+
+				if(	old_color[1] != palette_G[i] ||
+					old_color[2] != palette_B[i]){
+						convergence= false;
+				}
+			}
+		}
+		printf("Nb_boucle:,%i\n",nb_boucle++);
+	}
+
+	// On met à la couleur correspondante a chaque points:
+	for(int i=0; i< height; i++){
+			for(int j=0; j< width; j++){
+				minDist = 257;
+				minID = 0;
+				currentPixel [1] = (*this)[i*3][j*3+1];
+
+				//On cherche la couleur de la palette la plus proche du pixel courant
+				for(int k_i=0; k_i < k; k_i++){
+					currentPalette[1]= palette_G[k_i];
+
+					currentDist = dist(currentPalette, currentPixel);
+					if(minDist > currentDist){
+						minDist = currentDist;
+						minID = k_i;
+					}
+
+					if(colored){//send color
+						imOut[i*3][j*3+1] = palette_G[minID];
+						imOut[i*3][j*3+2] = palette_B[minID];
+					}
+					else{//send ndg
+						imOut[i*3][j*3+1] = minID * 256/k;
+					}
+				}
+			}
+		}
+	//dump de la palette
+	currentID=0;
+	for(int i=0; i<sqrt_k; i++){
+		for(int j=0; j<sqrt_k; j++){
+			paletteOut[i*3][j*3+1] = palette_G[currentID];
+			paletteOut[i*3][j*3+2] = palette_B[currentID];
+			currentID++;
+		}
+	}
+	paletteOut.save("./Sortie/palette_dump.ppm");
+
+	this->PSNR(imOut);
+	return imOut;
+}
