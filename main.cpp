@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	ImageBase imIn, imOut;
 	imIn.load(cNomImgLue);
 	imIn.to_YCrCb().save(cNomImgEcrite);
-	imIn.PSNR(imIn.to_YCrCb());
+	imIn.PSNR(imIn.to_YCrCb().to_RGB());
 	imIn.transform_vaguellette(N,0,0,imIn.getWidth());
 	//imIn.save(cNomImgEcrite);
 

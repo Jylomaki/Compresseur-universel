@@ -2003,4 +2003,22 @@ double ImageBase::PSNR(ImageBase target){
 	return 0.0f;
 }
 
+ImageBase ImageBase::to_RGB(){
+	ImageBase imOut(this->getWidth(), this->getHeight(), this->getColor());
+	int YCrCb[3], RGB[3];
+	for(int i=0; i<height; i++){
+		for(int j=0; j<width; j++){
+			YCrCb[0]=(*this)[i*3][j*3+0];
+			YCrCb[1]=(*this)[i*3][j*3+1];
+			YCrCb[2]=(*this)[i*3][j*3+2];
 
+			RGB_to_YCbCr(YCrCb, RGB);
+			check_In_range(RGB);
+
+			imOut[i*3][j*3+0]=RGB[0];
+			imOut[i*3][j*3+1]=RGB[1];
+			imOut[i*3][j*3+2]=RGB[2];
+		}
+	}
+	return imOut;
+}

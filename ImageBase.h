@@ -121,6 +121,7 @@ public:
 	void RGB_to_YCbCr(int *RBG, int *YCbCbr);
 	void YCbCr_to_RBG(int *YCbCbr, int *RGB);
 	ImageBase to_YCrCb();
+	ImageBase to_RGB();
 	void check_In_range(int* RGB);
 	int to_range(int C);
 
