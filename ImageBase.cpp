@@ -19,6 +19,9 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <sstream>
+
+using namespace std;
 
 
 ImageBase::ImageBase(void)
@@ -2024,15 +2027,39 @@ ImageBase ImageBase::to_RGB(){
 	return imOut;
 }
 
-unsigned char* ImageBase::dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau) {
+void ImageBase::dictionnaire(ImageBase *imIn,string * dictionnary, vector<int> dictionnary_ids) {
 	unsigned char* valeurs = imIn->getData();
 
-   std::string sortie;
+    string current_string;
+    stringstream ss;
 
     for (int i = 0 ; i < imIn->getHeight() * imIn->getWidth() ; i++) {
-        for (int j = 0 ; j < taille_tableau ; j++) {
+        ss << valeurs[i];
+        current_string = ss.str();
 
+        int j = i;
+        while (dictionnary->find(current_string)) {
+            ss.clear(); ss << valeurs[i + ++j];
+            current_string += ss.str();
         }
+
+        *dictionnary += current_string;
+        current_string.clear(); ss.clear();
+    }
+
+    for (int i = 0 ; i < imIn->getHeight() * imIn->getWidth() ; i++) {
+        ss << valeurs[i + 1];
+        current_string = ss.str();
+
+        int j = i + 1;
+        ss.clear();
+        ss << current_string << valeurs[j];
+        while (dictionnary->find(ss.str())) {
+            ss << valeurs[++j];
+        }
+
+        dictionnary_ids.push_back(j);
+
     }
 
 }

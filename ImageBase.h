@@ -19,6 +19,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 class ImageBase
 {
@@ -129,7 +130,7 @@ public:
 	void transform_vaguellette(int Hbegin, int Vbegin, int size);
 	double PSNR(ImageBase target);
 
-    unsigned char* dictionnaire(ImageBase *imIn, unsigned char * bibliotheque, int taille_tableau);
+	void dictionnaire(ImageBase *imIn,std::string * dictionnary, std::vector<int> dictionnary_ids);
     ImageBase pallette_CbCr(int k, bool colored);
 
 };
