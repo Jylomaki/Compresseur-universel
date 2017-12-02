@@ -1813,9 +1813,18 @@ void ImageBase::RGB_to_YCbCr(int *RGB, int *YCbCbr){
 }
 
 void ImageBase::YCbCr_to_RGB(int *YCbCbr, int *RGB){
-	RGB[0] = static_cast<unsigned char>(YCbCbr[0]+ 1.402*(YCbCbr[2]-128));
-	RGB[1] = static_cast<unsigned char>(YCbCbr[0]- 0.34414*(YCbCbr[1]-128) - 0.71414*(YCbCbr[2]-128));
-	RGB[2] = static_cast<unsigned char>(YCbCbr[0]+ 1.772*(YCbCbr[1]-128));
+	RGB[0] = YCbCbr[0]+ 1.402*(YCbCbr[2]-128);
+	RGB[1] = YCbCbr[0]- 0.34414*(YCbCbr[1]-128) - 0.71414*(YCbCbr[2]-128);
+	RGB[2] = YCbCbr[0]+ 1.772*(YCbCbr[1]-128);
+
+    if(RGB[0] < 0) RGB[0] = 0;
+    if(RGB[1] < 0) RGB[1] = 0;
+    if(RGB[2] < 0) RGB[2] = 0;
+
+    if(RGB[0] > 255) RGB[0] = 255;
+    if(RGB[1] > 255) RGB[1] = 255;
+    if(RGB[2] > 255) RGB[2] = 255;
+
 }
 
 void ImageBase::check_In_range(int* RGB){
@@ -2228,10 +2237,10 @@ ImageBase ImageBase::pallette_CbCr(int k, bool colored){
 	return imOut;
 }
 
-void ImageBase::compressionFacongJPG(ImageBase imIn) {
+void ImageBase::compressionFacongJPG() {
 
-    ImageBase YCbCr = imIn.to_YCbCr();
-    int size = imIn.getWidth();
+    ImageBase YCbCr = to_YCbCr();
+    int size = getWidth();
 
     //Sous échantillonage de la chrominance : version 4:2:0
     ImageBase echantillonage(size,size, true);

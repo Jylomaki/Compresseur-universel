@@ -137,5 +137,5 @@ public:
     void dictionnaire(unsigned char * valeurs, int length, std::vector<std::string> dictionnary, std::vector<unsigned long> dictionnary_ids);
     ImageBase from_Dico(int height, int width, std::vector<unsigned long> ids, std::vector<std::string> dico);
 
-    void compressionFacongJPG(ImageBase imIn);
+    void compressionFacongJPG();
 };

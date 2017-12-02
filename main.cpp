@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     nom_fichier_sortie << "Sortie/" << image_lue;
     string s = nom_fichier_sortie.str();
 
-    imIn.compressionFacongJPG(imIn);
+    imIn.compressionFacongJPG();
 
     /*
 
