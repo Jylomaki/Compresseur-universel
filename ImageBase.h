@@ -138,5 +138,6 @@ public:
     ImageBase from_Dico(int height, int width, std::vector<unsigned long> ids, std::vector<std::string> dico);
 
     void compressionDuGitan();
+    ImageBase DecompressionDuGitan(bool color);
 
 };

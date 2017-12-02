@@ -2259,7 +2259,7 @@ void ImageBase::compressionDuGitan() {
     if (color) {
         ImageBase YCbCr = to_YCbCr();
         for (int i = 0; i < size; i += 2) {
-            for (int j = 0; j < size; j += 4) {
+            for (int j = 0; j < size; j += 2) {
                 int i3 = i * 3, j3 = j * 3;
 
                 //Moyenne en 2 * 2
@@ -2268,13 +2268,9 @@ void ImageBase::compressionDuGitan() {
                 int moyenneCr1 =
                         (YCbCr[i3][j3 + 2] + YCbCr[i3][j3 + 5] + YCbCr[i3 + 3][j3 + 2] + YCbCr[i3 + 3][j3 + 5]) / 4;
 
-                int moyenneCb2 =
-                        (YCbCr[i3][j3 + 7] + YCbCr[i3][j3 + 10] + YCbCr[i3 + 3][j3 + 7] + YCbCr[i3 + 3][j3 + 10]) / 4;
-                int moyenneCr2 =
-                        (YCbCr[i3][j3 + 8] + YCbCr[i3][j3 + 11] + YCbCr[i3 + 3][j3 + 8] + YCbCr[i3 + 3][j3 + 11]) / 4;
 
                 for (int k1 = i3; k1 <= i3 + 3; k1 += 3) {
-                    for (int k2 = j3; k2 < j3 + 12; k2 += 3) {
+                    for (int k2 = j3; k2 <= j3 + 6; k2 += 3) {
                         echantillonage[k1][k2] = YCbCr[k1][k2];
                     }
 
@@ -2282,11 +2278,6 @@ void ImageBase::compressionDuGitan() {
                     echantillonage[k1][j3 + 2] = moyenneCr1;
                     echantillonage[k1][j3 + 4] = moyenneCb1;
                     echantillonage[k1][j3 + 5] = moyenneCr1;
-
-                    echantillonage[k1][j3 + 7] = moyenneCb2;
-                    echantillonage[k1][j3 + 8] = moyenneCr2;
-                    echantillonage[k1][j3 + 10] = moyenneCb2;
-                    echantillonage[k1][j3 + 11] = moyenneCr2;
                 }
 
             }
@@ -2300,7 +2291,7 @@ void ImageBase::compressionDuGitan() {
         Y.open("Sortie/Y.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                Y << int(YCbCr[i * 3][j * 3]) << endl;
+                Y << int(echantillonage[i * 3][j * 3]) << endl;
             }
         }
         Y.close();
@@ -2309,12 +2300,11 @@ void ImageBase::compressionDuGitan() {
         Cb.open("Sortie/Cb.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
         Cr.open("Sortie/Cr.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
 
-        for (int i = 0; i < size; i += 4) {
-            for (int j = 0; j < size; j += 4) {
+        for (int i = 0; i < size; i += 2) {
+            for (int j = 0; j < size; j += 2) {
                 int i3 = i * 3, j3 = j * 3;
-                Cb << (int) YCbCr[i3][j3 + 1] << endl;
-                Cr << (int) YCbCr[i3][j3 + 2] << endl;
-
+                Cb << (int) echantillonage[i3][j3 + 1] << endl;
+                Cr << (int) echantillonage[i3][j3 + 2] << endl;
             }
         }
 
@@ -2357,7 +2347,69 @@ void ImageBase::compressionDuGitan() {
         }
 
         sortie.close();
+    }
+}
+
+ImageBase ImageBase::DecompressionDuGitan(bool color) {
+    int size = 512;
+
+    ImageBase sortie(size, size, color);
+
+    if(color) {
+        ifstream Ytxt, Cbtxt, Crtxt;
+        Ytxt.open("Sortie/Y.txt");
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int i3 = i * 3, j3 = j * 3;
+                int a;
+                Ytxt >> a;
+                sortie[i3][j3] = a;
+            }
+        }
+
+        Ytxt.close();
+
+        Cbtxt.open("Sortie/Cb.txt");
+        Crtxt.open("Sortie/Cr.txt");
+
+        int sizeDiv = size / 2;
+
+        int CbDiv[sizeDiv][sizeDiv], CrDiv[sizeDiv][sizeDiv];
+
+        for (int i = 0 ; i < sizeDiv ; i++) {
+            for (int j = 0 ; j < sizeDiv ; j++) {
+                int tmp;
+                Cbtxt >> tmp;
+                CbDiv[i][j] = tmp;
+                Crtxt >> tmp;
+                CrDiv[i][j] = tmp;
+            }
+        }
+
+        int Cb[size][size], Cr[size][size];
+
+        for (int i = 0 ; i < sizeDiv ; i++) {
+            for (int j = 0 ; j < sizeDiv ; j++) {
+                int i2 = i * 2, j2 = j * 2;
+                Cb[i2][j2] = Cb[i2][j2+1] = CbDiv[i][j];
+                Cr[i2][j2] = Cr[i2][j2+1] = CrDiv[i][j];
+
+                Cb[i2 + 1][j2] = Cb[i2 + 1][j2+1] = CbDiv[i][j];
+                Cr[i2 + 1][j2] = Cr[i2 + 1][j2+1] = CrDiv[i][j];
+            }
+        }
+
+        for (int i = 0 ; i < size ; i++) {
+            for (int j = 0 ; j < size ; j++) {
+                int i3 = i * 3, j3 = j * 3;
+                sortie[i3][j3 + 1] = Cb[i][j];
+                sortie[i3][j3 + 2] = Cr[i][j];
+            }
+        }
 
     }
 
+    return sortie.to_RGB();
 }
+

@@ -25,7 +25,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-	sscanf (argv[1],"%s",choix) ;
 	sscanf (argv[2],"%s",cNomImgLue);
 
     /*
@@ -41,10 +40,13 @@ int main(int argc, char **argv)
     string s = nom_fichier_sortie.str();
      */
 
-    if(choix == 'c') {
+    if(*argv[1] == 'c') {
+        cout << "Compression" << endl;
         imIn.compressionDuGitan();
     } else {
-
+        cout << "Decompression" << endl;
+        imIn.to_YCbCr().save("Ycbcr.ppm");
+        imIn.DecompressionDuGitan(true).save("Decompressiong.ppm");
     }
 
     /*
