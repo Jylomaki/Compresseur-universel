@@ -20,6 +20,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <map>
 
 using namespace std;
 
@@ -2027,41 +2028,70 @@ ImageBase ImageBase::to_RGB(){
 	return imOut;
 }
 
-void ImageBase::dictionnaire(ImageBase *imIn,string * dictionnary, vector<int> dictionnary_ids) {
-	unsigned char* valeurs = imIn->getData();
-
+int find_in_dict(vector<string>d,string s){
+    for(int i=0; i<d.size(); i++){
+        if(d[i]==s)
+            return i;
+    }
+    return -1;
+}
+void ImageBase::dictionnaire(unsigned char * valeurs, int length, vector<string> dictionnary, vector<unsigned long> dictionnary_ids) {
     string current_string;
     stringstream ss;
+    int dico_id=0;
 
-    for (int i = 0 ; i < imIn->getHeight() * imIn->getWidth() ; i++) {
+    for (int i = 0 ; i < length ; i++) {
         ss << valeurs[i];
         current_string = ss.str();
 
         int j = i;
-        while (dictionnary->find(current_string)) {
-            ss.clear(); ss << valeurs[i + ++j];
+        while (find_in_dict(dictionnary,current_string)>=0 && j < length) {
+            ss.clear();
+            ss << valeurs[++j];
             current_string += ss.str();
         }
-
-        *dictionnary += current_string;
+        dictionnary.push_back(current_string);
         current_string.clear(); ss.clear();
+        if(i%1000 == 0)
+            cout<<"dict creation:" << i << " size of dict: " << dictionnary.size() << endl;
     }
 
-    for (int i = 0 ; i < imIn->getHeight() * imIn->getWidth() ; i++) {
-        ss << valeurs[i + 1];
+    for (int i = 0 ; i < length ; i++) {
+        ss << valeurs[i];
         current_string = ss.str();
 
-        int j = i + 1;
+        int j = i;
         ss.clear();
         ss << current_string << valeurs[j];
-        while (dictionnary->find(ss.str())) {
+        while (find_in_dict(dictionnary,ss.str())>=0 && j< length) {
             ss << valeurs[++j];
         }
 
-        dictionnary_ids.push_back(j);
+        dictionnary_ids.push_back(find_in_dict(dictionnary,ss.str()));
 
     }
 
+}
+
+ImageBase ImageBase::from_Dico(int height, int width, vector<unsigned long> ids, vector<string> dico){
+    ImageBase imOut(height, width,false);
+    int x,y;
+    int current_id=0, current_char=0;
+    string currentString;
+    while(current_char < height * width){
+        currentString = dico[current_id];
+        for(int j=0; j < currentString.length(); j++){
+            if(x >= height) {
+                x = x - height;
+                y++;
+            }
+            imOut[x*3][y*3]=currentString[j];
+
+            x++;
+            current_char++;
+        }
+    }
+    return imOut;
 }
 
 ImageBase ImageBase::pallette_CbCr(int k, bool colored){
@@ -2197,3 +2227,45 @@ ImageBase ImageBase::pallette_CbCr(int k, bool colored){
 	this->PSNR(imOut);
 	return imOut;
 }
+
+void ImageBase::compressionFacongJPG(ImageBase imIn) {
+
+    ImageBase YCbCr = imIn.to_YCbCr();
+    int size = imIn.getWidth();
+
+    //Sous échantillonage de la chrominance : version 4:2:0
+    ImageBase echantillonage(size,size, true);
+
+    for (int i = 0 ; i < size ; i+=2) {
+        for (int j = 0 ; j < size ; j+=4) {
+            int i3 = i*3, j3 = j * 3;
+
+            //Moyenne en 2 * 2
+            int moyenneCb1 = (YCbCr[i3][j3 + 1] + YCbCr[i3][j3 + 4] + YCbCr[i3 + 3][j3 + 1] + YCbCr[i3 + 3][j3 + 4]) / 4;
+            int moyenneCr1 = (YCbCr[i3][j3 + 2] + YCbCr[i3][j3 + 5] + YCbCr[i3 + 3][j3 + 2] + YCbCr[i3 + 3][j3 + 5]) / 4;
+
+            int moyenneCb2 = (YCbCr[i3][j3 + 7] + YCbCr[i3][j3 + 10] + YCbCr[i3 + 3][j3 + 7] + YCbCr[i3 + 3][j3 + 10]) / 4;
+            int moyenneCr2 = (YCbCr[i3][j3 + 8] + YCbCr[i3][j3 + 11] + YCbCr[i3 + 3][j3 + 8] + YCbCr[i3 + 3][j3 + 11]) / 4;
+
+            for (int k1 = i3 ; k1 <= i3 + 3 ; k1 += 3) {
+                for (int k2 = j3 ; k2 < j3 + 12 ; k2 += 3) {
+                    echantillonage[k1][k2] = YCbCr[k1][k2];
+                }
+
+                echantillonage[k1][j3 + 1] = moyenneCb1;
+                echantillonage[k1][j3 + 2] = moyenneCr1;
+                echantillonage[k1][j3 + 4] = moyenneCb1;
+                echantillonage[k1][j3 + 5] = moyenneCr1;
+
+                echantillonage[k1][j3 + 7] = moyenneCb2;
+                echantillonage[k1][j3 + 8] = moyenneCr2;
+                echantillonage[k1][j3 + 10] = moyenneCb2;
+                echantillonage[k1][j3 + 11] = moyenneCr2;
+            }
+
+        }
+    }
+
+    echantillonage.to_RGB().save("Sortie/groskek.ppm");
+}
+

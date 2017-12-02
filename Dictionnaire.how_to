@@ -13,7 +13,6 @@ Creation du dico:
 		push current_string into dico
 
 
-
 Compression:
 	while(not the end)
 		current_string = next_pix
@@ -23,3 +22,4 @@ Compression:
 
 
 resulting: Dictionaire + Array of dico_ID
+   n

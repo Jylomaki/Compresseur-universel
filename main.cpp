@@ -36,15 +36,31 @@ int main(int argc, char **argv)
     nom_fichier_sortie << "Sortie/" << image_lue;
     string s = nom_fichier_sortie.str();
 
-    imIn.to_YCbCr().save(const_cast<char *> (s.c_str()));
+    imIn.compressionFacongJPG(imIn);
 
-    imIn.PSNR(imIn.to_YCbCr());
-    //imIn.to_YCbCr().save("Sortie/YCBCR");
-	//imIn.to_YCbCr().K_mean(S,1).save("Sortie/YCBCR_KM");
-	//imIn.to_YCbCr().K_mean(S,1).to_RGB().save("Sortie/YCBCR_KM_RGB");
-	imIn.PSNR(imIn.to_YCbCr().K_mean(S,1).to_RGB());
-	imIn.transform_vaguellette(N,0,0,imIn.getWidth());
-	//imIn.save(cNomImgEcrite);
+    /*
+
+	if(colored) {
+		imIn.to_YCbCr().save(const_cast<char *> (s.c_str()));
+		imIn.PSNR(imIn.to_YCbCr());
+		//imIn.to_YCbCr().save("Sortie/YCBCR");
+		//imIn.to_YCbCr().K_mean(S,1).save("Sortie/YCBCR_KM");
+		//imIn.to_YCbCr().K_mean(S,1).to_RGB().save("Sortie/YCBCR_KM_RGB");
+		imIn.PSNR(imIn.to_YCbCr().K_mean(S, 1).to_RGB());
+		imIn.transform_vaguellette(N, 0, 0, imIn.getWidth());
+		//imIn.save(cNomImgEcrite);
+	}
+	else{
+		vector<string> dico;
+		unsigned char * valeurs = imIn.getData();
+		int height = imIn.getHeight(), width = imIn.getWidth();
+		vector < unsigned long> ids;
+		imIn.dictionnaire(valeurs,height*width,dico, ids);
+		printf("creation du dictionnaire done\n");
+		imIn.from_Dico(height,width,ids, dico).save("Sortie/from_dico.pgm");
+		printf("Creation de l'image a partir du dico: done\n");
+	}
+     */
 
 	printf("done\n");
 	return 0;

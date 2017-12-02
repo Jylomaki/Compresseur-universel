@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class ImageBase
 {
 	///////////// Enumerations
@@ -130,7 +132,10 @@ public:
 	void transform_vaguellette(int Hbegin, int Vbegin, int size);
 	double PSNR(ImageBase target);
 
-	void dictionnaire(ImageBase *imIn,std::string * dictionnary, std::vector<int> dictionnary_ids);
     ImageBase pallette_CbCr(int k, bool colored);
 
+    void dictionnaire(unsigned char * valeurs, int length, std::vector<std::string> dictionnary, std::vector<unsigned long> dictionnary_ids);
+    ImageBase from_Dico(int height, int width, std::vector<unsigned long> ids, std::vector<std::string> dico);
+
+    void compressionFacongJPG(ImageBase imIn);
 };
