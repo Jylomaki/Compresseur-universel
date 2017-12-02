@@ -21,6 +21,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <fstream>
 
 using namespace std;
 
@@ -1992,24 +1993,35 @@ void ImageBase::transform_vaguellette(int Hbegin, int Vbegin, int size){
 	//this->save("debug_im/in_recurP.ppm");
 }
 
-double ImageBase::PSNR(ImageBase target){
-	int width= this->getWidth();
-	int height = this->getHeight();
-	if(target.getWidth() != width || target.getHeight() != height)
-	{
-		printf("Problem: image are not the same size!\n");
-		return 0.0f;
-	}
-	float diffsum = 0;
-	for(int c=0; c<3; c++)
-		for(int i=0; i<height; i++)
-			for(int j=0; j<width; j++){
-				diffsum += pow((*this)[i*3][j*3+c] - target[i*3][j*3+c],2);
-			}
+double ImageBase::PSNR(ImageBase target) {
+    int width = this->getWidth();
+    int height = this->getHeight();
+    if (target.getWidth() != width || target.getHeight() != height) {
+        printf("Problem: image are not the same size!\n");
+        return 0.0f;
+    }
+    float diffsum = 0;
+
+    if(color) {
+        for (int c = 0; c < 3; c++) {
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    diffsum += pow((*this)[i * 3][j * 3 + c] - target[i * 3][j * 3 + c], 2);
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                diffsum += pow((*this)[i][j] - target[i][j], 2);
+            }
+        }
+    }
 
 	float EQM_color = diffsum / (float) (height*width);
 	if(EQM_color > 0){
-		double PSNR = 10.0 * log10(pow(3*255.0,2.0) / EQM_color);
+        int lol = color ? 3 : 1;
+		double PSNR = 10.0 * log10(pow(lol * 255.0,2.0) / EQM_color);
 		printf("The PSNR is %lf\n",PSNR);
 		return PSNR;
 	}
@@ -2237,47 +2249,115 @@ ImageBase ImageBase::pallette_CbCr(int k, bool colored){
 	return imOut;
 }
 
-void ImageBase::compressionFacongJPG() {
+void ImageBase::compressionDuGitan() {
 
-    ImageBase YCbCr = to_YCbCr();
     int size = getWidth();
 
     //Sous échantillonage de la chrominance : version 4:2:0
-    ImageBase echantillonage(size,size, true);
+    ImageBase echantillonage(size, size, color);
 
-    for (int i = 0 ; i < size ; i+=2) {
-        for (int j = 0 ; j < size ; j+=4) {
-            int i3 = i*3, j3 = j * 3;
+    if (color) {
+        ImageBase YCbCr = to_YCbCr();
+        for (int i = 0; i < size; i += 2) {
+            for (int j = 0; j < size; j += 4) {
+                int i3 = i * 3, j3 = j * 3;
 
-            //Moyenne en 2 * 2
-            int moyenneCb1 = (YCbCr[i3][j3 + 1] + YCbCr[i3][j3 + 4] + YCbCr[i3 + 3][j3 + 1] + YCbCr[i3 + 3][j3 + 4]) / 4;
-            int moyenneCr1 = (YCbCr[i3][j3 + 2] + YCbCr[i3][j3 + 5] + YCbCr[i3 + 3][j3 + 2] + YCbCr[i3 + 3][j3 + 5]) / 4;
+                //Moyenne en 2 * 2
+                int moyenneCb1 =
+                        (YCbCr[i3][j3 + 1] + YCbCr[i3][j3 + 4] + YCbCr[i3 + 3][j3 + 1] + YCbCr[i3 + 3][j3 + 4]) / 4;
+                int moyenneCr1 =
+                        (YCbCr[i3][j3 + 2] + YCbCr[i3][j3 + 5] + YCbCr[i3 + 3][j3 + 2] + YCbCr[i3 + 3][j3 + 5]) / 4;
 
-            int moyenneCb2 = (YCbCr[i3][j3 + 7] + YCbCr[i3][j3 + 10] + YCbCr[i3 + 3][j3 + 7] + YCbCr[i3 + 3][j3 + 10]) / 4;
-            int moyenneCr2 = (YCbCr[i3][j3 + 8] + YCbCr[i3][j3 + 11] + YCbCr[i3 + 3][j3 + 8] + YCbCr[i3 + 3][j3 + 11]) / 4;
+                int moyenneCb2 =
+                        (YCbCr[i3][j3 + 7] + YCbCr[i3][j3 + 10] + YCbCr[i3 + 3][j3 + 7] + YCbCr[i3 + 3][j3 + 10]) / 4;
+                int moyenneCr2 =
+                        (YCbCr[i3][j3 + 8] + YCbCr[i3][j3 + 11] + YCbCr[i3 + 3][j3 + 8] + YCbCr[i3 + 3][j3 + 11]) / 4;
 
-            for (int k1 = i3 ; k1 <= i3 + 3 ; k1 += 3) {
-                for (int k2 = j3 ; k2 < j3 + 12 ; k2 += 3) {
-                    echantillonage[k1][k2] = YCbCr[k1][k2];
+                for (int k1 = i3; k1 <= i3 + 3; k1 += 3) {
+                    for (int k2 = j3; k2 < j3 + 12; k2 += 3) {
+                        echantillonage[k1][k2] = YCbCr[k1][k2];
+                    }
+
+                    echantillonage[k1][j3 + 1] = moyenneCb1;
+                    echantillonage[k1][j3 + 2] = moyenneCr1;
+                    echantillonage[k1][j3 + 4] = moyenneCb1;
+                    echantillonage[k1][j3 + 5] = moyenneCr1;
+
+                    echantillonage[k1][j3 + 7] = moyenneCb2;
+                    echantillonage[k1][j3 + 8] = moyenneCr2;
+                    echantillonage[k1][j3 + 10] = moyenneCb2;
+                    echantillonage[k1][j3 + 11] = moyenneCr2;
                 }
 
-                echantillonage[k1][j3 + 1] = moyenneCb1;
-                echantillonage[k1][j3 + 2] = moyenneCr1;
-                echantillonage[k1][j3 + 4] = moyenneCb1;
-                echantillonage[k1][j3 + 5] = moyenneCr1;
-
-                echantillonage[k1][j3 + 7] = moyenneCb2;
-                echantillonage[k1][j3 + 8] = moyenneCr2;
-                echantillonage[k1][j3 + 10] = moyenneCb2;
-                echantillonage[k1][j3 + 11] = moyenneCr2;
             }
-
         }
+
+
+        echantillonage.to_RGB().save("Sortie/groskek.ppm");
+        PSNR(echantillonage.to_RGB());
+
+        ofstream Y;
+        Y.open("Sortie/Y.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Y << int(YCbCr[i * 3][j * 3]) << endl;
+            }
+        }
+        Y.close();
+
+        ofstream Cb, Cr;
+        Cb.open("Sortie/Cb.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
+        Cr.open("Sortie/Cr.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
+
+        for (int i = 0; i < size; i += 4) {
+            for (int j = 0; j < size; j += 4) {
+                int i3 = i * 3, j3 = j * 3;
+                Cb << (int) YCbCr[i3][j3 + 1] << endl;
+                Cr << (int) YCbCr[i3][j3 + 2] << endl;
+
+            }
+        }
+
+        Cb.close();
+        Cr.close();
+
+    } else {
+        for (int i = 0; i < size; i += 2) {
+            for (int j = 0; j < size; j += 2) {
+                int moyenne = 0;
+                for (int k1 = i ; k1 <= i + 1 ; k1 ++) {
+                    for (int k2 = j ; k2 <= j + 1 ; k2 ++) {
+                        moyenne +=  (*this)[k1][k2];
+                    }
+                }
+
+                moyenne /= 4;
+
+                if(moyenne > 255) moyenne = 255;
+
+                for (int k1 = i ; k1 <= i + 1 ; k1 ++) {
+                    for (int k2 = j ; k2 <= j + 1 ; k2 ++) {
+                        echantillonage[k1][k2] = moyenne;
+                    }
+                }
+            }
+        }
+
+
+        echantillonage.save("Sortie/Ndg.pgm");
+        //PSNR(echantillonage); //ERREUR ICI, JE SAIS PAS PK LOL
+
+        ofstream sortie;
+        sortie.open("Sortie/Nvg.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
+
+        for (int i = 0; i < size; i += 2) {
+            for (int j = 0; j < size; j += 2) {
+                sortie << (int) echantillonage[i][j] << endl;
+            }
+        }
+
+        sortie.close();
+
     }
 
-    echantillonage.to_RGB().save("Sortie/groskek.ppm");
-
-	PSNR(echantillonage.to_RGB());
-
 }
-

@@ -9,37 +9,45 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	///////////////////////////////////////// Exemple d'un seuillage d'image
-	char cNomImgLue[250], cNomImgEcrite[250], cNomImgFlou[250];
-	int S, colored,N;
-    stringstream nom_fichier_sortie;
+	char choix, cNomImgLue[250];//, cNomImgEcrite[250], cNomImgFlou[250];
+	//int S, colored,N;
+    //stringstream nom_fichier_sortie;
 
+    /*
 	if (argc != 6)
 	{
 		printf("Usage: ImageIn.pgm ImageOut.pgm K colored\n");
 		return 1;
-	}
-	sscanf (argv[1],"%s",cNomImgLue) ;
-	sscanf (argv[2],"%s",cNomImgEcrite);
-	sscanf (argv[3],"%d",&S);
-	sscanf (argv[4],"%d",&colored);
-	sscanf (argv[5],"%d",&N);
+	}*/
 
+    if(argc != 3) {
+        cout << "Usage : c/d Image.ppm ou pgm.\n c : Compression\nD : Decompression\n";
+        return EXIT_FAILURE;
+    }
 
-    string image_lue = cNomImgLue;
-    image_lue = image_lue.substr(0, image_lue.size()-4);
-
-
-	ImageBase imIn, imOut;
-	imIn.load(cNomImgLue);
-
-
-    nom_fichier_sortie << "Sortie/" << image_lue;
-    string s = nom_fichier_sortie.str();
-
-    imIn.compressionFacongJPG();
+	sscanf (argv[1],"%s",choix) ;
+	sscanf (argv[2],"%s",cNomImgLue);
 
     /*
+    string image_lue = cNomImgLue;
+    image_lue = image_lue.substr(0, image_lue.size()-4);
+    */
 
+	ImageBase imIn;
+	imIn.load(cNomImgLue);
+
+    /*
+    nom_fichier_sortie << "Sortie/" << image_lue;
+    string s = nom_fichier_sortie.str();
+     */
+
+    if(choix == 'c') {
+        imIn.compressionDuGitan();
+    } else {
+
+    }
+
+    /*
 	if(colored) {
 		imIn.to_YCbCr().save(const_cast<char *> (s.c_str()));
 		imIn.PSNR(imIn.to_YCbCr());
@@ -60,7 +68,7 @@ int main(int argc, char **argv)
 		imIn.from_Dico(height,width,ids, dico).save("Sortie/from_dico.pgm");
 		printf("Creation de l'image a partir du dico: done\n");
 	}
-     */
+    */
 
 	printf("done\n");
 	return 0;
