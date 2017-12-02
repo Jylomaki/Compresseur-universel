@@ -2000,16 +2000,16 @@ double ImageBase::PSNR(ImageBase target){
 		printf("Problem: image are not the same size!\n");
 		return 0.0f;
 	}
-	int diffsum =0;
+	float diffsum = 0;
 	for(int c=0; c<3; c++)
 		for(int i=0; i<height; i++)
 			for(int j=0; j<width; j++){
-				diffsum += pow((*this)[i*3][j*3] - target[i*3][j*3+c],2);
+				diffsum += pow((*this)[i*3][j*3+c] - target[i*3][j*3+c],2);
 			}
 
-	int EQM_color = diffsum/ (height*width);
+	float EQM_color = diffsum / (float) (height*width);
 	if(EQM_color > 0){
-		double PSNR = 10.0 * log10(pow(3*255.0,2.0)/(float)EQM_color);
+		double PSNR = 10.0 * log10(pow(3*255.0,2.0) / EQM_color);
 		printf("The PSNR is %lf\n",PSNR);
 		return PSNR;
 	}
@@ -2276,5 +2276,8 @@ void ImageBase::compressionFacongJPG() {
     }
 
     echantillonage.to_RGB().save("Sortie/groskek.ppm");
+
+	PSNR(echantillonage.to_RGB());
+
 }
 
