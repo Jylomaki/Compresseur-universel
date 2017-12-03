@@ -2291,7 +2291,7 @@ void ImageBase::compressionDuGitan() {
         Y.open("Sortie/Y.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                Y << int(echantillonage[i * 3][j * 3]) << endl;
+                Y << echantillonage[i * 3][j * 3] << endl;
             }
         }
         Y.close();
@@ -2303,8 +2303,8 @@ void ImageBase::compressionDuGitan() {
         for (int i = 0; i < size; i += 2) {
             for (int j = 0; j < size; j += 2) {
                 int i3 = i * 3, j3 = j * 3;
-                Cb << (int) echantillonage[i3][j3 + 1] << endl;
-                Cr << (int) echantillonage[i3][j3 + 2] << endl;
+                Cb << echantillonage[i3][j3 + 1] << endl;
+                Cr << echantillonage[i3][j3 + 2] << endl;
             }
         }
 
@@ -2342,7 +2342,7 @@ void ImageBase::compressionDuGitan() {
 
         for (int i = 0; i < size; i += 2) {
             for (int j = 0; j < size; j += 2) {
-                sortie << (int) echantillonage[i][j] << endl;
+                sortie << echantillonage[i][j] << endl;
             }
         }
 
@@ -2362,7 +2362,7 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 int i3 = i * 3, j3 = j * 3;
-                int a;
+                unsigned char a;
                 Ytxt >> a;
                 sortie[i3][j3] = a;
             }
@@ -2379,7 +2379,7 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
 
         for (int i = 0 ; i < sizeDiv ; i++) {
             for (int j = 0 ; j < sizeDiv ; j++) {
-                int tmp;
+                unsigned char tmp;
                 Cbtxt >> tmp;
                 CbDiv[i][j] = tmp;
                 Crtxt >> tmp;

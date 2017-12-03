@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	///////////////////////////////////////// Exemple d'un seuillage d'image
-	char choix, cNomImgLue[250];//, cNomImgEcrite[250], cNomImgFlou[250];
+	char cNomImgLue[250];//, cNomImgEcrite[250], cNomImgFlou[250];
 	//int S, colored,N;
     //stringstream nom_fichier_sortie;
 
@@ -45,7 +45,6 @@ int main(int argc, char **argv)
         imIn.compressionDuGitan();
     } else {
         cout << "Decompression" << endl;
-        imIn.to_YCbCr().save("Ycbcr.ppm");
         imIn.DecompressionDuGitan(true).save("Decompressiong.ppm");
     }
 
