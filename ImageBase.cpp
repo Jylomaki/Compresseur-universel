@@ -2367,8 +2367,7 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
             }
         }
 
-        sortie.to_RGB().save("gitan.ppm");
-
+        return sortie.to_RGB();
     }
 
 }
