@@ -2291,7 +2291,7 @@ void ImageBase::compressionDuGitan() {
         Y.open("Sortie/Y.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                Y << (int) echantillonage[i * 3][j * 3] << " ";
+                Y << (unsigned char) echantillonage[i * 3][j * 3] << " ";
             }
         }
         Y.close();
@@ -2342,7 +2342,7 @@ void ImageBase::compressionDuGitan() {
 
         for (int i = 0; i < size; i += 2) {
             for (int j = 0; j < size; j += 2) {
-                sortie << (int) echantillonage[i][j] << endl;
+                sortie << (unsigned char) echantillonage[i][j] << endl;
             }
         }
 
@@ -2362,7 +2362,7 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 int i3 = i * 3, j3 = j * 3;
-                int a;
+                unsigned char a;
                 Ytxt >> a;
                 sortie[i3][j3] = a;
             }
@@ -2399,4 +2399,3 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
 
     return sortie.to_RGB();
 }
-

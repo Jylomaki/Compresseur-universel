@@ -139,5 +139,5 @@ public:
 
     void compressionDuGitan();
     ImageBase DecompressionDuGitan(bool color);
-
+    
 };
