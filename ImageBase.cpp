@@ -2291,7 +2291,7 @@ void ImageBase::compressionDuGitan() {
         Y.open("Sortie/Y.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                Y << echantillonage[i * 3][j * 3] << endl;
+                Y << (int) echantillonage[i * 3][j * 3] << " ";
             }
         }
         Y.close();
@@ -2303,8 +2303,8 @@ void ImageBase::compressionDuGitan() {
         for (int i = 0; i < size; i += 2) {
             for (int j = 0; j < size; j += 2) {
                 int i3 = i * 3, j3 = j * 3;
-                Cb << echantillonage[i3][j3 + 1] << endl;
-                Cr << echantillonage[i3][j3 + 2] << endl;
+                Cb << echantillonage[i3][j3 + 1];
+                Cr << echantillonage[i3][j3 + 2];
             }
         }
 
@@ -2342,7 +2342,7 @@ void ImageBase::compressionDuGitan() {
 
         for (int i = 0; i < size; i += 2) {
             for (int j = 0; j < size; j += 2) {
-                sortie << echantillonage[i][j] << endl;
+                sortie << (int) echantillonage[i][j] << endl;
             }
         }
 
@@ -2362,7 +2362,7 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 int i3 = i * 3, j3 = j * 3;
-                unsigned char a;
+                int a;
                 Ytxt >> a;
                 sortie[i3][j3] = a;
             }
@@ -2375,7 +2375,7 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
 
         int sizeDiv = size / 2;
 
-        int CbDiv[sizeDiv][sizeDiv], CrDiv[sizeDiv][sizeDiv];
+        unsigned char CbDiv[sizeDiv][sizeDiv], CrDiv[sizeDiv][sizeDiv];
 
         for (int i = 0 ; i < sizeDiv ; i++) {
             for (int j = 0 ; j < sizeDiv ; j++) {
@@ -2387,24 +2387,11 @@ ImageBase ImageBase::DecompressionDuGitan(bool color) {
             }
         }
 
-        int Cb[size][size], Cr[size][size];
-
-        for (int i = 0 ; i < sizeDiv ; i++) {
-            for (int j = 0 ; j < sizeDiv ; j++) {
-                int i2 = i * 2, j2 = j * 2;
-                Cb[i2][j2] = Cb[i2][j2+1] = CbDiv[i][j];
-                Cr[i2][j2] = Cr[i2][j2+1] = CrDiv[i][j];
-
-                Cb[i2 + 1][j2] = Cb[i2 + 1][j2+1] = CbDiv[i][j];
-                Cr[i2 + 1][j2] = Cr[i2 + 1][j2+1] = CrDiv[i][j];
-            }
-        }
-
         for (int i = 0 ; i < size ; i++) {
             for (int j = 0 ; j < size ; j++) {
                 int i3 = i * 3, j3 = j * 3;
-                sortie[i3][j3 + 1] = Cb[i][j];
-                sortie[i3][j3 + 2] = Cr[i][j];
+                sortie[i3][j3 + 1] = CbDiv[i/2][j/2];
+                sortie[i3][j3 + 2] = CrDiv[i/2][j/2];
             }
         }
 

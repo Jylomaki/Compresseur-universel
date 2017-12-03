@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         imIn.compressionDuGitan();
     } else {
         cout << "Decompression" << endl;
-        imIn.DecompressionDuGitan(true).save("Decompressiong.ppm");
+        imIn.DecompressionDuGitan(true).save("Decompression.ppm");
     }
 
     /*
