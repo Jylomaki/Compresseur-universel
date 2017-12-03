@@ -2268,48 +2268,44 @@ void ImageBase::compressionDuGitan() {
                 int moyenneCr1 =
                         (YCbCr[i3][j3 + 2] + YCbCr[i3][j3 + 5] + YCbCr[i3 + 3][j3 + 2] + YCbCr[i3 + 3][j3 + 5]) / 4;
 
+                if(moyenneCb1 > 255) moyenneCb1 = 255;
+                if(moyenneCr1 > 255) moyenneCr1 = 255;
+
 
                 for (int k1 = i3; k1 <= i3 + 3; k1 += 3) {
                     for (int k2 = j3; k2 <= j3 + 6; k2 += 3) {
                         echantillonage[k1][k2] = YCbCr[k1][k2];
                     }
 
-                    echantillonage[k1][j3 + 1] = moyenneCb1;
-                    echantillonage[k1][j3 + 2] = moyenneCr1;
-                    echantillonage[k1][j3 + 4] = moyenneCb1;
-                    echantillonage[k1][j3 + 5] = moyenneCr1;
+                    echantillonage[k1][j3 + 1] = (unsigned char) moyenneCb1;
+                    echantillonage[k1][j3 + 2] = (unsigned char) moyenneCr1;
+                    echantillonage[k1][j3 + 4] = (unsigned char) moyenneCb1;
+                    echantillonage[k1][j3 + 5] = (unsigned char) moyenneCr1;
                 }
 
             }
         }
 
-
-        echantillonage.to_RGB().save("Sortie/groskek.ppm");
+        echantillonage.save("Sortie/gitan.ppm");
         PSNR(echantillonage.to_RGB());
 
-        ofstream Y;
-        Y.open("Sortie/Y.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                Y << (unsigned char) echantillonage[i * 3][j * 3] << " ";
-            }
-        }
-        Y.close();
+        ImageBase Ysortie(size, size, false), Cbsortie(size / 2, size / 2, false), Crsortie(size / 2, size / 2, false);
 
-        ofstream Cb, Cr;
-        Cb.open("Sortie/Cb.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
-        Cr.open("Sortie/Cr.txt", std::ofstream::out | std::ofstream::trunc | ios::binary);
-
-        for (int i = 0; i < size; i += 2) {
-            for (int j = 0; j < size; j += 2) {
+        for (int i = 0 ; i < size ; i ++) {
+            for (int j = 0 ; j < size ; j++) {
                 int i3 = i * 3, j3 = j * 3;
-                Cb << echantillonage[i3][j3 + 1];
-                Cr << echantillonage[i3][j3 + 2];
+
+                Ysortie[i][j] = echantillonage[i3][j3];
+                if(i % 2 == 0) {
+                    Cbsortie[i / 2][j / 2] = echantillonage[i3][j3 + 1];
+                    Crsortie[i / 2][j / 2] = echantillonage[i3][j3 + 2];
+                }
             }
         }
 
-        Cb.close();
-        Cr.close();
+        Ysortie.save("Sortie/Y.pgm");
+        Cbsortie.save("Sortie/Cb.pgm");
+        Crsortie.save("Sortie/Cr.pgm");
 
     } else {
         for (int i = 0; i < size; i += 2) {
@@ -2331,8 +2327,8 @@ void ImageBase::compressionDuGitan() {
                     }
                 }
             }
-        }
 
+        }
 
         echantillonage.save("Sortie/Ndg.pgm");
         //PSNR(echantillonage); //ERREUR ICI, JE SAIS PAS PK LOL
@@ -2342,7 +2338,7 @@ void ImageBase::compressionDuGitan() {
 
         for (int i = 0; i < size; i += 2) {
             for (int j = 0; j < size; j += 2) {
-                sortie << (unsigned char) echantillonage[i][j] << endl;
+                sortie << echantillonage[i][j];
             }
         }
 
@@ -2351,51 +2347,28 @@ void ImageBase::compressionDuGitan() {
 }
 
 ImageBase ImageBase::DecompressionDuGitan(bool color) {
-    int size = 512;
+    const int size = 512;
 
     ImageBase sortie(size, size, color);
 
     if(color) {
-        ifstream Ytxt, Cbtxt, Crtxt;
-        Ytxt.open("Sortie/Y.txt");
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                int i3 = i * 3, j3 = j * 3;
-                unsigned char a;
-                Ytxt >> a;
-                sortie[i3][j3] = a;
-            }
-        }
-
-        Ytxt.close();
-
-        Cbtxt.open("Sortie/Cb.txt");
-        Crtxt.open("Sortie/Cr.txt");
-
-        int sizeDiv = size / 2;
-
-        unsigned char CbDiv[sizeDiv][sizeDiv], CrDiv[sizeDiv][sizeDiv];
-
-        for (int i = 0 ; i < sizeDiv ; i++) {
-            for (int j = 0 ; j < sizeDiv ; j++) {
-                unsigned char tmp;
-                Cbtxt >> tmp;
-                CbDiv[i][j] = tmp;
-                Crtxt >> tmp;
-                CrDiv[i][j] = tmp;
-            }
-        }
+        ImageBase Y, Cb, Cr;
+        Y.load("Sortie/Y.pgm");
+        Cb.load("Sortie/Cb.pgm");
+        Cr.load("Sortie/Cr.pgm");
 
         for (int i = 0 ; i < size ; i++) {
             for (int j = 0 ; j < size ; j++) {
                 int i3 = i * 3, j3 = j * 3;
-                sortie[i3][j3 + 1] = CbDiv[i/2][j/2];
-                sortie[i3][j3 + 2] = CrDiv[i/2][j/2];
+                sortie[i3][j3]     = Y[i][j];
+                sortie[i3][j3 + 1] = Cb[i / 2][j / 2];
+                sortie[i3][j3 + 2] = Cr[i / 2][j / 2];
             }
         }
 
+        sortie.to_RGB().save("gitan.ppm");
+
     }
 
-    return sortie.to_RGB();
 }
